@@ -88,6 +88,23 @@ export type Copy = {
       alt: string
     }
   }
+  reviews: {
+    label: string
+    title: string
+    subtitle: string
+    quoteMarks: [open: string, close: string]
+    /**
+     * Порядок — как в `reviewShots` внизу файла: items[i] описывает скриншот reviewShots[i],
+     * notes[j] — подпись к стрелке reviewShots[i].notes[j].
+     */
+    items: {
+      name: string
+      role: string
+      quote: string
+      alt: string
+      notes: { title: string; text: string }[]
+    }[]
+  }
   faq: {
     title: string
     subtitle: string
@@ -118,7 +135,8 @@ export type Copy = {
     sendAnother: string
     details: Record<ContactId, string>
   }
-  footer: { note: string }
+  /** madeBy — подпись перед ссылкой на студию (brand.agency). */
+  footer: { note: string; madeBy: string }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -305,6 +323,27 @@ const ru: Copy = {
     },
   },
 
+  // Скриншоты переписки. Сами картинки и точки стрелок — в `reviewShots` внизу файла.
+  reviews: {
+    label: 'Отзывы',
+    title: 'Что пишут подопечные',
+    subtitle: 'Сообщения из личной переписки — как есть, без редактуры.',
+    quoteMarks: ['«', '»'],
+    items: [
+      {
+        name: 'Константин',
+        role: 'подопечный · брусья с весом',
+        quote: 'Спасибо, тренер, на 13 кг больше, чем в тот раз. Ты лучший.',
+        alt: 'Скриншот переписки в Telegram: Константин благодарит тренера после соревнований',
+        notes: [
+          { title: '85 кг', text: 'Отягощение на брусьях — подход на соревнованиях.' },
+          { title: '+13 кг', text: 'Прибавка к результату прошлого старта.' },
+          { title: '5 кг до мастера', text: 'Столько осталось до норматива мастера спорта.' },
+        ],
+      },
+    ],
+  },
+
   // Ответы проявляются побуквенно при раскрытии пункта.
   faq: {
     title: 'Частые вопросы',
@@ -388,6 +427,7 @@ const ru: Copy = {
 
   footer: {
     note: '© 2026 · Вадим Лойко · Персональные тренировки',
+    madeBy: 'Сайт создан в',
   },
 }
 
@@ -575,6 +615,27 @@ const en: Copy = {
     },
   },
 
+  // Screenshots stay in Russian — the notes next to the arrows translate the key points.
+  reviews: {
+    label: 'Reviews',
+    title: 'What my athletes write',
+    subtitle: 'Messages from private chats — exactly as sent, unedited.',
+    quoteMarks: ['“', '”'],
+    items: [
+      {
+        name: 'Konstantin',
+        role: 'athlete · weighted dips',
+        quote: "Thank you, coach — 13 kg more than last time. You're the best.",
+        alt: 'Telegram chat screenshot: Konstantin thanks his coach after a competition',
+        notes: [
+          { title: '85 kg', text: 'Added weight on dips — a competition attempt.' },
+          { title: '+13 kg', text: 'Up from his result at the previous meet.' },
+          { title: '5 kg to Master', text: "That's all that's left to the Master of Sport standard." },
+        ],
+      },
+    ],
+  },
+
   faq: {
     title: 'Common questions',
     subtitle: 'Everything people usually ask before their first session',
@@ -657,6 +718,7 @@ const en: Copy = {
 
   footer: {
     note: '© 2026 · Vadim Loiko · Personal training',
+    madeBy: 'Website by',
   },
 }
 
@@ -680,6 +742,8 @@ export type Brand = {
   }[]
   /** Ссылки в подвале. Подпись — строкой или { ru, en }, если зависит от языка. */
   footerLinks: { label: string | Localized; href: string }[]
+  /** Студия, которая сделала сайт, — подпись в подвале. */
+  agency: { name: string; href: string }
 }
 
 export const brand: Brand = {
@@ -699,7 +763,40 @@ export const brand: Brand = {
       href: 'https://ddxfitness.me/employee_detail/5281',
     },
   ],
+  agency: { name: 'Swapox Agency', href: 'https://swapox.ru/' },
 }
+
+// ─────────────────────────────────────────────────────────────
+//  СКРИНШОТЫ ОТЗЫВОВ — секция «Отзывы» (Reviews.jsx).
+//  Чтобы добавить отзыв: положите скриншот с айфона в public/images/reviews,
+//  допишите запись сюда и тексты — в `reviews.items` обоих словарей (в том же порядке).
+//  Когда отзывов больше одного, над телефоном появляется переключатель.
+// ─────────────────────────────────────────────────────────────
+export type ReviewShot = {
+  src: string
+  /** Размер скриншота в пикселях. Экран в рамке — 591:1280, другой формат обрежется снизу. */
+  size: [width: number, height: number]
+  notes: {
+    /** С какой стороны от телефона стоит подпись. */
+    side: 'left' | 'right'
+    /** Куда указывает стрелка — точка на скриншоте, в его пикселях. */
+    at: [x: number, y: number]
+    /** Высота заголовка подписи: 0 — верх блока, 1 — низ. Справа внизу (от 0.6) стоит цитата. */
+    labelY: number
+  }[]
+}
+
+export const reviewShots: ReviewShot[] = [
+  {
+    src: '/images/reviews/konstantin.webp',
+    size: [591, 1280],
+    notes: [
+      { side: 'left', at: [22, 708], labelY: 0.36 }, // подпись «85» под видео
+      { side: 'right', at: [523, 800], labelY: 0.4 }, // «на 13 кг больше»
+      { side: 'left', at: [18, 1025], labelY: 0.82 }, // «5 кг в брусьях осталось»
+    ],
+  },
+]
 
 // ─────────────────────────────────────────────────────────────
 //  КАРТИНКИ — одни на оба языка.

@@ -44,6 +44,18 @@ export default function Footer() {
         </div>
 
         <p className="font-body text-sm text-white/30">{t.footer.note}</p>
+
+        <p className="w-full border-t border-white/10 pt-6 font-body text-sm text-white/30">
+          {t.footer.madeBy}{' '}
+          <a
+            href={brand.agency.href}
+            target="_blank"
+            rel="noreferrer"
+            className="text-white/55 underline underline-offset-4 transition-colors hover:text-white"
+          >
+            {brand.agency.name}
+          </a>
+        </p>
       </div>
     </footer>
   )

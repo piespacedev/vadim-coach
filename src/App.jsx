@@ -6,6 +6,7 @@ import StickyNav from "./components/StickyNav";
 import About from "./components/About";
 import Programs from "./components/Programs";
 import Results from "./components/Results";
+import Reviews from "./components/Reviews";
 import Faq from "./components/Faq";
 import Contacts from "./components/Contacts";
 import Footer from "./components/Footer";
@@ -79,6 +80,7 @@ export default function App() {
       <About />
       <Programs />
       <Results />
+      <Reviews />
       <Faq />
       <Contacts />
       <Footer />

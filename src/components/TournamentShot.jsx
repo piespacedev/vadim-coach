@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Medal } from 'lucide-react'
 import { images } from '../content/site'
 import { useLang } from '../lib/i18n'
+import { arrowHead } from '../lib/arrow'
 
 // Все координаты — в пикселях исходного кадра tournament.webp (924×690).
 // SVG поверх фото имеет тот же viewBox, поэтому стрелки масштабируются вместе с картинкой.
@@ -24,23 +25,6 @@ const ARROWS = [
   // к мастеру спорта в центре
   { from: [762, 106], c1: [742, 152], c2: [612, 132], to: [530, 224], delay: 0.7 },
 ]
-
-const HEAD = 20 // длина «усов» наконечника
-const HEAD_ANGLE = (28 * Math.PI) / 180
-
-/** Открытый наконечник: два «уса» от конца линии назад, вдоль касательной c2 → to. */
-function arrowHead([cx, cy], [x, y]) {
-  const len = Math.hypot(x - cx, y - cy) || 1
-  const dx = (x - cx) / len
-  const dy = (y - cy) / len
-  const wing = (sign) => {
-    const a = sign * HEAD_ANGLE
-    const rx = dx * Math.cos(a) - dy * Math.sin(a)
-    const ry = dx * Math.sin(a) + dy * Math.cos(a)
-    return `${(x - rx * HEAD).toFixed(1)} ${(y - ry * HEAD).toFixed(1)}`
-  }
-  return `M${wing(1)} L${x} ${y} L${wing(-1)}`
-}
 
 const pct = (v, total) => `${(v / total) * 100}%`
 

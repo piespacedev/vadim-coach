@@ -225,6 +225,71 @@ body {
   animation: fadeUp 0.7s var(--ease-out-expo) both;
 }
 
+/* ---------- рамка iPhone 15 Pro (PhoneFrame) ----------
+   Все размеры — в cqw от ширины .iphone, поэтому рамка масштабируется целиком.
+   Толщина рамки 1 + 2.4 = 3.4cqw — то же число в BEZEL (PhoneFrame.jsx). */
+.iphone {
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+}
+.iphone-body {
+  padding: 1cqw;
+  border-radius: 16.4cqw;
+  /* титан */
+  background: linear-gradient(145deg, #b9b5ac 0%, #6f6c66 22%, #a19d94 48%, #5c5a55 74%, #8d8981 100%);
+  box-shadow:
+    inset 0 0 0.3cqw 0.2cqw rgba(255, 255, 255, 0.35),
+    0 1cqw 2cqw rgba(0, 0, 0, 0.12),
+    0 9cqw 18cqw -7cqw rgba(0, 0, 0, 0.45);
+}
+.iphone-screen {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 591 / 1280;
+  border: 2.4cqw solid #000;
+  border-radius: 15.4cqw;
+  background: #000;
+  box-sizing: content-box;
+}
+.iphone-screen img {
+  border-radius: 13cqw;
+}
+/* блик на стекле */
+.iphone-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 13cqw;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.1) 0%, transparent 28%);
+  pointer-events: none;
+}
+.iphone-island {
+  position: absolute;
+  top: 1.4cqw;
+  left: 50%;
+  width: 30cqw;
+  height: 9cqw;
+  border-radius: 999px;
+  background: #000;
+  transform: translateX(-50%);
+}
+.iphone-overlay {
+  position: absolute;
+  inset: 3.4cqw;
+}
+.iphone-btn {
+  position: absolute;
+  z-index: -1;
+  width: 1.4cqw;
+  border-radius: 0.6cqw;
+  background: linear-gradient(90deg, #6f6c66, #a19d94);
+}
+.iphone-btn-action { left: -0.7cqw; top: 35cqw; height: 7cqw; }
+.iphone-btn-up { left: -0.7cqw; top: 49cqw; height: 13cqw; }
+.iphone-btn-down { left: -0.7cqw; top: 65cqw; height: 13cqw; }
+.iphone-btn-power { right: -0.7cqw; top: 56cqw; height: 21cqw; transform: scaleX(-1); }
+
 @media (prefers-reduced-motion: reduce) {
   .shot-line {
     stroke-dashoffset: 0;
