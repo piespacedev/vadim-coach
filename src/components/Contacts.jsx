@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Phone, Send, Clock, Mail, MessageCircle, Check, ArrowUpRight } from 'lucide-react'
-import { brand } from '../content/site'
+import { brand, content } from '../content/site'
 import { useLang } from '../lib/i18n'
 import Reveal from './Reveal'
 import SectionHead from './SectionHead'
@@ -8,24 +8,49 @@ import Bench from './icons/Bench'
 
 const ICONS = { Phone, Send, Bench, Clock, Mail, MessageCircle }
 
-const EMPTY = { name: '', contact: '', goal: '', comment: '' }
+// website — поле-ловушка: людям не видно, спам-боты заполняют его и заявка отбрасывается.
+const EMPTY = { name: '', contact: '', goal: '', comment: '', website: '' }
+
+// Заявки принимает бот на VPS (server/index.js). В `npm run dev` — тот же обработчик в Vite.
+const LEAD_URL = import.meta.env.DEV ? '/api/lead' : 'https://vadim-bot.201-34-132-115.sslip.io/api/lead'
 
 export default function Contacts() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const contacts = t.contacts
   // goal хранит id цели, а не подпись: при смене языка выбор в селекте сохраняется.
   const emptyForm = () => ({ ...EMPTY, goal: contacts.goals[0]?.id ?? '' })
   const [form, setForm] = useState(emptyForm)
   const [sent, setSent] = useState(false)
+  // idle | sending | error
+  const [status, setStatus] = useState('idle')
 
   const update = (field) => (event) => setForm({ ...form, [field]: event.target.value })
 
-  // ВНИМАНИЕ: заявка пока никуда не уходит — нужен бэкенд или Telegram-бот.
-  // Подробности в README, раздел «Форма заявки».
-  const handleSubmit = (event) => {
+  // Заявка уходит боту на VPS, он пересылает её в группу в Telegram (см. server/ и README).
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    console.log('Lead:', form)
-    setSent(true)
+    if (status === 'sending') return
+    setStatus('sending')
+    try {
+      const response = await fetch(LEAD_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          // Вадиму цель приходит по-русски, на каком бы языке ни заполняли форму.
+          goal: content.ru.contacts.goals.find((goal) => goal.id === form.goal)?.label ?? form.goal,
+          lang,
+        }),
+        // Бот при сбое сети повторяет отправку в Telegram — даём ему время.
+        signal: AbortSignal.timeout?.(30000),
+      })
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      setStatus('idle')
+      setSent(true)
+    } catch (error) {
+      console.error('Заявка не отправлена:', error)
+      setStatus('error')
+    }
   }
 
   const inputClass =
@@ -68,6 +93,7 @@ export default function Contacts() {
                   type="button"
                   onClick={() => {
                     setForm(emptyForm())
+                    setStatus('idle')
                     setSent(false)
                   }}
                   className="mt-7 w-fit font-body text-sm text-emerald-300 underline underline-offset-4 transition-opacity hover:opacity-70"
@@ -128,14 +154,35 @@ export default function Contacts() {
                   />
                 </label>
 
+                {/* Ловушка для спам-ботов — см. EMPTY */}
+                <div aria-hidden="true" className="pointer-events-none absolute -left-[9999px] h-px w-px overflow-hidden">
+                  <input
+                    type="text"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={form.website}
+                    onChange={update('website')}
+                  />
+                </div>
+
                 <button
                   type="submit"
-                  className="mt-2 flex h-14 items-center justify-center gap-2 rounded-md bg-white font-body font-medium text-black transition-colors duration-300 hover:bg-emerald-300 sm:col-span-2 sm:w-[280px] lg:h-16"
+                  disabled={status === 'sending'}
+                  className="mt-2 flex h-14 items-center justify-center gap-2 rounded-md bg-white font-body font-medium text-black transition-colors duration-300 hover:bg-emerald-300 disabled:cursor-wait disabled:opacity-70 disabled:hover:bg-white sm:col-span-2 sm:w-[280px] lg:h-16"
                   style={{ letterSpacing: '-0.02em' }}
                 >
-                  <span className="text-base lg:text-lg">{contacts.submit}</span>
+                  <span className="text-base lg:text-lg">
+                    {status === 'sending' ? contacts.sending : contacts.submit}
+                  </span>
                   <ArrowUpRight size={20} strokeWidth={1.6} />
                 </button>
+
+                {status === 'error' && (
+                  <p role="alert" className="font-body text-sm text-rose-300 sm:col-span-2" style={{ lineHeight: 1.5 }}>
+                    {contacts.error}
+                  </p>
+                )}
               </form>
             )}
           </Reveal>

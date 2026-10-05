@@ -1,0 +1,3 @@
+# Скрипты и файлы для Linux-сервера — всегда с LF: с CRLF bash и systemd ломаются.
+*.sh text eol=lf
+deploy/** text eol=lf

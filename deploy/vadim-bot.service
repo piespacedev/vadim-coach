@@ -1,0 +1,23 @@
+# Бот заявок сайта Вадима Лойко: принимает заявки с формы и пересылает в Telegram (server/index.js).
+# Ставится в /etc/systemd/system/vadim-bot.service; код — в /opt/vadim-bot, настройки — /opt/vadim-bot/.env.
+[Unit]
+Description=Вадим Лойко — бот заявок с сайта (Telegram)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=vadimbot
+Group=vadimbot
+WorkingDirectory=/opt/vadim-bot
+ExecStart=/usr/bin/node --env-file=/opt/vadim-bot/.env server/index.js
+Restart=always
+RestartSec=5
+# Сервису нужен только исходящий HTTPS к Telegram и свой порт на localhost — писать на диск нечего.
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

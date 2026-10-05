@@ -130,6 +130,10 @@ export type Copy = {
     /** id одинаковый во всех языках — он и уходит в заявку. */
     goals: { id: string; label: string }[]
     submit: string
+    /** Подпись кнопки, пока заявка уходит. */
+    sending: string
+    /** Если отправить не вышло — под кнопкой. */
+    error: string
     successTitle: string
     successText: string
     sendAnother: string
@@ -202,7 +206,7 @@ const ru: Copy = {
     paragraphs: [
       'Меня зовут Вадим Лойко. Тренирую с 2011 года и за это время провёл больше 10 000 персональных тренировок. Сам выступаю в пауэрлифтинге: мастер спорта международного класса, рекордсмен России, Европы и мира среди юниоров.',
       'Работаю и с профессиональными спортсменами, и с новичками: силовой тренинг, бодибилдинг, кроссфит, воркаут. К каждому клиенту ищу индивидуальный подход — программа строится под цель, уровень подготовки и график.',
-      'Сейчас — старший тренер и тренер первой категории в DDX Fitness: руковожу тренерским составом и наставляю молодых тренеров. У клиентов — больше 60 подтверждённых отзывов.',
+      'Сейчас — старший тренер и тренер первой категории: руковожу тренерским составом и наставляю молодых тренеров. У клиентов — больше 60 подтверждённых отзывов.',
     ],
     stats: [
       { value: '14 лет', caption: 'тренерского стажа' },
@@ -390,7 +394,7 @@ const ru: Copy = {
     ],
   },
 
-  // Форма пока никуда не отправляется — см. README.
+  // Заявка из формы уходит в Telegram-бот — см. README, раздел «Форма заявки».
   contacts: {
     label: 'Контакты',
     title: 'Запишитесь на бесплатную консультацию',
@@ -414,6 +418,8 @@ const ru: Copy = {
       { id: 'other', label: 'Другое' },
     ],
     submit: 'Отправить заявку',
+    sending: 'Отправляем…',
+    error: 'Не получилось отправить заявку. Попробуйте ещё раз или напишите мне в Telegram или WhatsApp.',
     successTitle: 'Заявка отправлена',
     successText: 'Свяжусь с вами в течение дня. Если вопрос срочный — пишите в Telegram или WhatsApp.',
     sendAnother: 'Отправить ещё одну',
@@ -494,7 +500,7 @@ const en: Copy = {
     paragraphs: [
       "My name is Vadim Loiko. I've been coaching since 2011 and have run more than 10,000 personal training sessions. I compete in powerlifting myself: I'm an international-class Master of Sport and a junior record holder in Russia, Europe and the world.",
       'I work with professional athletes and complete beginners alike: strength training, bodybuilding, CrossFit and calisthenics. Every client gets an individual approach — the program is built around your goal, your fitness level and your schedule.',
-      "Today I'm a senior coach and first-category trainer at DDX Fitness, where I lead the coaching team and mentor young trainers. Clients have left me more than 60 verified reviews.",
+      "Today I'm a senior coach and first-category trainer: I lead a coaching team and mentor young trainers. Clients have left me more than 60 verified reviews.",
     ],
     stats: [
       { value: '14 years', caption: 'of coaching experience' },
@@ -681,7 +687,7 @@ const en: Copy = {
     ],
   },
 
-  // The form doesn't send anywhere yet — see README.
+  // Requests from the form go to the Telegram bot — see README.
   contacts: {
     label: 'Contact',
     title: 'Book a free consultation',
@@ -705,6 +711,8 @@ const en: Copy = {
       { id: 'other', label: 'Something else' },
     ],
     submit: 'Send request',
+    sending: 'Sending…',
+    error: "Your request didn't go through. Please try again, or message me on Telegram or WhatsApp.",
     successTitle: 'Request sent',
     successText: "I'll get back to you within a day. If it's urgent, message me on Telegram or WhatsApp.",
     sendAnother: 'Send another one',
@@ -758,10 +766,6 @@ export const brand: Brand = {
   footerLinks: [
     { label: 'Telegram', href: 'https://t.me/+79152252241' },
     { label: 'WhatsApp', href: 'https://wa.me/79152252241' },
-    {
-      label: { ru: 'Отзывы на DDX Fitness', en: 'Reviews on DDX Fitness' },
-      href: 'https://ddxfitness.me/employee_detail/5281',
-    },
   ],
   agency: { name: 'Swapox Agency', href: 'https://swapox.ru/' },
 }

@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "bot:check": "node --env-file=.env.local scripts/bot.mjs check",
+    "deploy:bot": "bash scripts/deploy-bot.sh"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.20",
